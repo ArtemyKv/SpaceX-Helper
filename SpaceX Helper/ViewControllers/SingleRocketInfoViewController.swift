@@ -37,7 +37,7 @@ class SingleRocketInfoViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        rocketInfoView.setupPanGesture()
+        rocketInfoView.setupSwipeGesture()
         rocketInfoView.settingsButton.addTarget(self, action: #selector(settingsButtonTapped(_:)), for: .touchUpInside)
         rocketInfoView.launchScreenButton.addTarget(self, action: #selector(showLaunchesButtonTapped(_:)), for: .touchUpInside)
         

@@ -118,10 +118,10 @@ class RocketInfoView: UIView {
         return view
     }()
     
-    private let containerViewDefaultHeigt: CGFloat = UIScreen.main.bounds.height * 0.65
-    private let containerViewMaxHeight: CGFloat = UIScreen.main.bounds.height
+    private let imageViewHeight = UIScreen.main.bounds.height * 0.4
     
-    private var containerViewHeightConstraint: NSLayoutConstraint?
+    private var containerViewHalfSizedTopAnchorConstraint: NSLayoutConstraint?
+    private var containerViewFullSizedTopAnchorConstraint: NSLayoutConstraint?
     
     private var containerViewIsFullSized: Bool = false
     
@@ -138,14 +138,17 @@ class RocketInfoView: UIView {
             imageView.topAnchor.constraint(equalTo: self.topAnchor),
             imageView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            imageView.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.4),
+            imageView.heightAnchor.constraint(equalToConstant: imageViewHeight),
             containerView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             containerView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             containerView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
         ])
         
-        containerViewHeightConstraint = containerView.heightAnchor.constraint(equalToConstant: containerViewDefaultHeigt)
-        containerViewHeightConstraint?.isActive = true
+        containerViewHalfSizedTopAnchorConstraint = containerView.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: -50)
+        containerViewHalfSizedTopAnchorConstraint?.isActive = true
+        
+        containerViewFullSizedTopAnchorConstraint = containerView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 0)
+        containerViewFullSizedTopAnchorConstraint?.isActive = false
         
         hStack.addArrangedSubview(rocketNameLabel)
         hStack.addArrangedSubview(settingsButton)
@@ -215,62 +218,35 @@ class RocketInfoView: UIView {
     }
 }
 
-//Setting up Pan Gesture
 extension RocketInfoView {
-    func setupPanGesture() {
-        let panGestureRecogniser = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(gesture:)))
-        
-        panGestureRecogniser.delaysTouchesBegan = false
-        panGestureRecogniser.delaysTouchesEnded = false
-        containerView.addGestureRecognizer(panGestureRecogniser)
+    func setupSwipeGesture() {
+        let swipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeGesture(gesture:)))
+        swipeGestureRecognizer.numberOfTouchesRequired = 1
+        swipeGestureRecognizer.direction = .up
+        self.addGestureRecognizer(swipeGestureRecognizer)
     }
     
-    @objc func handlePanGesture(gesture: UIPanGestureRecognizer) {
-        let translation = gesture.translation(in: self)
-        let isDraggingDown = translation.y > 0
+    @objc func handleSwipeGesture(gesture: UISwipeGestureRecognizer) {
         
-        if !containerViewIsFullSized && !isDraggingDown {
-            switch gesture.state {
-                case .changed:
-                    containerViewHeightConstraint?.constant = containerViewDefaultHeigt - translation.y
-                case .ended:
-                    if abs(translation.y) < containerViewDefaultHeigt / 10 {
-                        UIView.animate(withDuration: 0.3) {
-                            self.containerViewHeightConstraint?.constant = self.containerViewDefaultHeigt
-                            self.layoutIfNeeded()
-                        }
-                    } else {
-                        self.containerViewIsFullSized = true
-                        UIView.animate(withDuration: 0.3) {
-                            self.containerViewHeightConstraint?.constant = self.containerViewMaxHeight
-                            self.layoutIfNeeded()
-                        }
-                    }
-                default:
-                    break
+        if containerViewIsFullSized {
+            containerViewIsFullSized = false
+            gesture.direction = .up
+            UIView.animate(withDuration: 0.3) {
+                self.containerViewFullSizedTopAnchorConstraint?.isActive = false
+                self.containerViewHalfSizedTopAnchorConstraint?.isActive = true
+                self.layoutIfNeeded()
             }
-        } else if containerViewIsFullSized && isDraggingDown {
-            switch gesture.state {
-                case .changed:
-                    containerViewHeightConstraint?.constant = containerViewMaxHeight - translation.y
-                case .ended:
-                    if abs(translation.y) < containerViewDefaultHeigt / 10 {
-                        UIView.animate(withDuration: 0.3) {
-                            self.containerViewHeightConstraint?.constant = self.containerViewMaxHeight
-                            self.layoutIfNeeded()
-                        }
-                    } else {
-                        self.containerViewIsFullSized = false
-                        UIView.animate(withDuration: 0.3) {
-                            self.containerViewHeightConstraint?.constant = self.containerViewDefaultHeigt
-                            self.layoutIfNeeded()
-                        }
-                    }
-                default:
-                    break
+        } else {
+            containerViewIsFullSized = true
+            gesture.direction = .down
+            UIView.animate(withDuration: 0.3) {
+                self.containerViewHalfSizedTopAnchorConstraint?.isActive = false
+                self.containerViewFullSizedTopAnchorConstraint?.isActive = true
+                self.layoutIfNeeded()
             }
         }
     }
+                                                              
 }
 
 //Updating  method with rocket info
@@ -281,9 +257,4 @@ extension RocketInfoView {
         firstStageSection.updateFor(rocket.firstStage)
         secondStageSection.updateFor(rocket.secondStage)
     }
-}
-
-//Button actions
-extension RocketInfoView {
-
 }
