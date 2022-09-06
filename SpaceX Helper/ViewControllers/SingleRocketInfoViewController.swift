@@ -13,10 +13,9 @@ class SingleRocketInfoViewController: UIViewController {
     
     var rocket: Rocket!
     var images: [UIImage]?
-    
-    var settings = Settings()
-    
+        
     var downloadService: DownloadService!
+    var settings = Settings.shared
     
     var collectionViewDataSource: DataSourceType!
     
@@ -125,7 +124,7 @@ class SingleRocketInfoViewController: UIViewController {
     }
     
     @objc func settingsButtonTapped(_ sender: UIButton) {
-        let settingsVC = SettingsViewController(settings: settings)
+        let settingsVC = SettingsViewController()
         settingsVC.delegate = self
         let navigationVC = UINavigationController(rootViewController: settingsVC)
         self.present(navigationVC, animated: true)

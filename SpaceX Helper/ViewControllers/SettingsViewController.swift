@@ -15,20 +15,11 @@ class SettingsViewController: UIViewController {
     
     var delegate: SettingsViewControllerDelegate?
     
-    var settings: Settings
+    var settings = Settings.shared
     
     var settingsView: SettingsView! {
         guard isViewLoaded else { return nil }
         return (self.view as! SettingsView)
-    }
-    
-    init(settings: Settings) {
-        self.settings = settings
-        super .init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {
