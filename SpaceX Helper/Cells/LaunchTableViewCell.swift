@@ -21,7 +21,7 @@ class LaunchTableViewCell: UITableViewCell {
     private let hStack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .horizontal
-        stack.alignment = .fill
+        stack.alignment = .center
         stack.distribution = .fillProportionally
         return stack
     }()
@@ -88,10 +88,13 @@ class LaunchTableViewCell: UITableViewCell {
         
         containerView.addSubview(hStack)
         hStack.translatesAutoresizingMaskIntoConstraints = false
+        successImageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             hStack.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 24),
             hStack.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -32),
             hStack.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+            successImageView.widthAnchor.constraint(equalToConstant: 32),
+            successImageView.heightAnchor.constraint(equalTo: successImageView.widthAnchor, multiplier: 1)
         ])
     }
 

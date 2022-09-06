@@ -37,7 +37,6 @@ class LaunchesTableViewController: UITableViewController {
         
         downloadService?.fetchLaunchesInfoForRocket(rocketID: rocketID, completion: { launches in
             self.launches = launches
-            print(launches)
             self.tableView.reloadData()
         })
 
@@ -63,7 +62,12 @@ class LaunchesTableViewController: UITableViewController {
         
         cell.nameLabel.text = launch.name
         cell.dateLabel.text = dateFormatter.string(from: launch.date)
-        cell.successImageView.image = launch.success ? UIImage(named: "Launch success") : UIImage(named: "Launch failure")
+        if let successfulLaunch = launch.success {
+            cell.successImageView.image = successfulLaunch ? UIImage(named: "Launch success") : UIImage(named: "Launch failure")
+        } else {
+            cell.successImageView.image = UIImage(systemName: "nosign")?.withTintColor(UIColor(rgb: 0x8E8E8F), renderingMode: .alwaysOriginal)
+
+        }
         return cell
     }
     

@@ -72,7 +72,6 @@ class DownloadService {
         let url = URL(string: "https://api.spacexdata.com/v4/launches/query")!
         
         let jsonDictionary: [String: Any] = ["query": ["rocket": "\(rocketID)"], "options": ["pagination" : false]]
-        print(rocketID)
         let jsonData = try? JSONSerialization.data(withJSONObject: jsonDictionary)
         
         var urlRequest = URLRequest(url: url)
@@ -87,8 +86,13 @@ class DownloadService {
                 return
             }
             
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                print("Server error")
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("Server not responding")
+                return
+            }
+            
+            guard httpResponse.statusCode == 200 else {
+                print("HTTP Error with code:\(httpResponse.statusCode)")
                 return
             }
             

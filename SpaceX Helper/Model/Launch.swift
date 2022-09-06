@@ -10,7 +10,7 @@ import Foundation
 struct Launch: Codable {
     var name: String
     var rocket: String
-    var success: Bool
+    var success: Bool?
     var date: Date
     
     enum CodingKeys: String, CodingKey {
