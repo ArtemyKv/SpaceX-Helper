@@ -12,11 +12,7 @@ class DownloadService {
     
     let defaultSession = URLSession(configuration: .default)
     
-        
-    var rockets: [Rocket] = []
-    var allLaunches: [Launch] = []
-    var launches: [Launch] = []
-    
+    private var launches: [String: [Launch]] = [:]
     private var imagesByRocketId: [String: [UIImage]] = [:]
     
     let rocketInfoURL = URL(string: "https://api.spacexdata.com/v4/rockets")!
@@ -56,20 +52,23 @@ class DownloadService {
     
     func fetchRocketInfo(completion: @escaping (([Rocket]) -> Void)) {
         fetchInfo(from: rocketInfoURL) { (rocketsInfo: [Rocket]) in
-            self.rockets = rocketsInfo
-            completion(self.rockets)
+            completion(rocketsInfo)
         }
     }
     
     func fetchAllLaunchesInfo(completion: @escaping (([Launch]) -> Void)) {
         fetchInfo(from: launchesInfoURL) { (launchesInfo: [Launch]) in
-            self.allLaunches = launchesInfo
-            completion(self.launches)
+            completion(launchesInfo)
         }
     }
     
     
     func fetchLaunchesInfoForRocket(rocketID: String, completion: @escaping ([Launch]) -> Void) {
+        if let launchesForRocketID = launches[rocketID] {
+            completion(launchesForRocketID)
+            return
+        }
+        
         let url = URL(string: "https://api.spacexdata.com/v4/launches/query")!
         
         let jsonDictionary: [String: Any] = ["query": ["rocket": "\(rocketID)"], "options": ["pagination" : false]]
@@ -105,6 +104,7 @@ class DownloadService {
                 
                 do {
                     let fetchResults = try jsonDecoder.decode(LaunchesSearchResults.self, from: data)
+                    self.launches[rocketID] = fetchResults.docs
                     DispatchQueue.main.async {
                         completion(fetchResults.docs)
                     }
@@ -120,6 +120,7 @@ class DownloadService {
     func fetchImages(for rocket: Rocket, completion: @escaping ([UIImage]) -> Void) {
         if let rocketImages = imagesByRocketId[rocket.id] {
             completion(rocketImages)
+            return
         }
         
         DispatchQueue.global(qos: .userInitiated).async {
