@@ -12,6 +12,7 @@ class SingleRocketInfoViewController: UIViewController {
     typealias DataSourceType = UICollectionViewDiffableDataSource<Section, Item>
     
     var rocket: Rocket!
+    var images: [UIImage]?
     
     var settings = Settings()
     
@@ -45,6 +46,11 @@ class SingleRocketInfoViewController: UIViewController {
         collectionViewDataSource = createCollectionViewDataSource()
         rocketInfoView.collectionView.dataSource = collectionViewDataSource
         rocketInfoView.collectionView.collectionViewLayout = createCollectionViewLayout()
+        
+        downloadService.fetchImages(for: rocket) { rocketImages in
+            self.images = rocketImages
+            self.rocketInfoView.imageView.image = self.images?.randomElement()
+        }
         
         setupView(rocket: rocket)
     }

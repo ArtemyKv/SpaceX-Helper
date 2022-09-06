@@ -33,7 +33,7 @@ class RocketInfoView: UIView {
         let imageView = UIImageView()
         imageView.backgroundColor = .white
         imageView.image = UIImage(systemName: "photo")
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         return imageView
     }()

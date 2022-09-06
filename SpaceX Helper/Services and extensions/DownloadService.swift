@@ -6,17 +6,18 @@
 //
 
 import Foundation
+import UIKit
 
 class DownloadService {
     
     let defaultSession = URLSession(configuration: .default)
     
-    
-    private var imageDataTasks: [String: URLSessionDataTask] = [:]
-    
+        
     var rockets: [Rocket] = []
     var allLaunches: [Launch] = []
     var launches: [Launch] = []
+    
+    private var imagesByRocketId: [String: [UIImage]] = [:]
     
     let rocketInfoURL = URL(string: "https://api.spacexdata.com/v4/rockets")!
     let launchesInfoURL = URL(string: "https://api.spacexdata.com/v4/launches")!
@@ -114,5 +115,25 @@ class DownloadService {
             }
         }
         dataTask.resume()
+    }
+    
+    func fetchImages(for rocket: Rocket, completion: @escaping ([UIImage]) -> Void) {
+        if let rocketImages = imagesByRocketId[rocket.id] {
+            completion(rocketImages)
+        }
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            let imageURLs = rocket.imageURLs
+            self.imagesByRocketId[rocket.id] = []
+            for url in imageURLs {
+                guard let data = try? Data(contentsOf: url), let image = UIImage(data: data) else { continue }
+                self.imagesByRocketId[rocket.id]?.append(image)
+            }
+            
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                completion(self.imagesByRocketId[rocket.id]!)
+            }
+        }
     }
 }
