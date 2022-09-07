@@ -107,7 +107,7 @@ class RocketInfoView: UIView {
         let button = UIButton()
         button.setTitle("Show launches", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 24, weight: .medium)
-        button.backgroundColor = UIColor(rgb: 0x8E8E8F)
+        button.backgroundColor = UIColor(rgb: 0x212121)
         button.layer.cornerRadius = 10
         return button
     }()

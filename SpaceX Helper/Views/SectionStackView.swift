@@ -33,6 +33,34 @@ class SectionStackView: UIStackView {
         return createInfoLabel()
     }()
     
+    lazy var firstRowUnitLabel: UILabel = {
+        createUnitLabel()
+    }()
+    lazy var secondRowUnitLabel: UILabel = {
+        createUnitLabel()
+    }()
+    
+    lazy var thirdRowUnitLabel: UILabel = {
+        createUnitLabel()
+    }()
+    
+    var unitLabelsAvailable: Bool = false {
+        didSet {
+            firstRowUnitLabelWidthConstraint?.constant = unitLabelWidth
+            secondRowUnitLabelWidthConstraint?.constant = unitLabelWidth
+            thirdRowUnitLabelWidthConstraint?.constant = unitLabelWidth
+
+        }
+    }
+    
+    private var firstRowUnitLabelWidthConstraint: NSLayoutConstraint?
+    private var secondRowUnitLabelWidthConstraint: NSLayoutConstraint?
+    private var thirdRowUnitLabelWidthConstraint: NSLayoutConstraint?
+
+    private var unitLabelWidth: CGFloat {
+        return unitLabelsAvailable ? 36 : 0
+    }
+    
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -66,6 +94,17 @@ class SectionStackView: UIStackView {
         return label
     }
     
+    private func createUnitLabel() -> UILabel {
+        let label = UILabel()
+        label.textAlignment = .right
+        label.numberOfLines = 1
+        label.font = .systemFont(ofSize: 16 , weight: .bold)
+        label.setContentHuggingPriority(UILayoutPriority(251), for: .horizontal)
+        label.textColor = UIColor(rgb: 0x8E8E8F)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }
+    
     private func setupView() {
         self.axis = .vertical
         self.alignment = .fill
@@ -74,9 +113,19 @@ class SectionStackView: UIStackView {
         
         let titleLabelsList = [firstRowTitleLabel, secondRowTitleLabel, thirdRowTitleLabel]
         let infoLabelsList = [firstRowInfoLabel, secondRowInfoLabel, thirdRowInfoLabel]
+        let unitLabelsList = [firstRowUnitLabel, secondRowUnitLabel, thirdRowUnitLabel]
+        
+        firstRowUnitLabelWidthConstraint = firstRowUnitLabel.widthAnchor.constraint(equalToConstant: unitLabelWidth)
+        secondRowUnitLabelWidthConstraint = secondRowUnitLabel.widthAnchor.constraint(equalToConstant: unitLabelWidth)
+        thirdRowUnitLabelWidthConstraint = thirdRowUnitLabel.widthAnchor.constraint(equalToConstant: unitLabelWidth)
+        
+        firstRowUnitLabelWidthConstraint?.isActive = true
+        secondRowUnitLabelWidthConstraint?.isActive = true
+        thirdRowUnitLabelWidthConstraint?.isActive = true
+
         
         for i in 0...2 {
-            let hStack = UIStackView(arrangedSubviews: [titleLabelsList[i], infoLabelsList[i]])
+            let hStack = UIStackView(arrangedSubviews: [titleLabelsList[i], infoLabelsList[i], unitLabelsList[i]])
             hStack.axis = .horizontal
             hStack.distribution = .fill
             hStack.alignment = .fill

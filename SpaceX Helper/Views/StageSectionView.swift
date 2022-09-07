@@ -13,7 +13,20 @@ class StageSectionView: UIView {
     lazy var fuelAmountLabel = sectionStackView.secondRowInfoLabel
     lazy var burnTimeLabel = sectionStackView.thirdRowInfoLabel
 
-    let sectionStackView = SectionStackView()
+    let sectionStackView: SectionStackView = {
+        let sectionStackView = SectionStackView()
+        
+        sectionStackView.unitLabelsAvailable = true
+        
+        sectionStackView.firstRowTitleLabel.text = "Engines Count"
+        sectionStackView.secondRowTitleLabel.text = "Fuel Amount"
+        sectionStackView.thirdRowTitleLabel.text = "Burn Time"
+        
+        sectionStackView.secondRowUnitLabel.text = "ton"
+        sectionStackView.thirdRowUnitLabel.text = "sec"
+        
+        return sectionStackView
+    }()
     
     let stageTitleLabel: UILabel = {
         let label = UILabel()
@@ -55,11 +68,6 @@ class StageSectionView: UIView {
             vStack.topAnchor.constraint(equalTo: self.topAnchor),
             vStack.bottomAnchor.constraint(equalTo: self.bottomAnchor)
         ])
-        
-        sectionStackView.firstRowTitleLabel.text = "Engines Count"
-        sectionStackView.secondRowTitleLabel.text = "Fuel Amount"
-        sectionStackView.thirdRowTitleLabel.text = "Burn Time"
-        
     }
 
 }
